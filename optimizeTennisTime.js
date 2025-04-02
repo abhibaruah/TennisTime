@@ -26,7 +26,7 @@ function readExcelFile(filePath) {
     return data;
   } catch (error) {
     console.error('Error reading Excel file:', error.message);
-    process.exit(1);
+    throw error;
   }
 }
 
@@ -149,12 +149,9 @@ function displayResults(paretoFront) {
   });
 }
 
-// Main function
-function main() {
+// Function to run the optimization process
+function optimizeTennisTimes(filePath) {
   try {
-    // Path to the Excel file
-    const filePath = path.join('XLSX', 'tennis_weather_nws_data.xlsx');
-    
     // Read the data
     const weatherData = readExcelFile(filePath);
     
@@ -171,11 +168,14 @@ function main() {
     // Display results
     displayResults(paretoFront);
     
+    return paretoFront;
   } catch (error) {
-    console.error('An error occurred:', error.message);
-    process.exit(1);
+    console.error('Error in optimization process:', error.message);
+    throw error;
   }
 }
 
-// Run the main function
-main();
+module.exports = {
+  optimizeTennisTimes,
+  CONSTRAINTS
+};
