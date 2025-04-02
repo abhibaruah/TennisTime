@@ -136,6 +136,15 @@ function processWeatherData(periods, locationInfo, days, startHour, endHour) {
 
 function saveToExcel(data, filename) {
   try {
+    // Create XLSX directory if it doesn't exist
+    const dir = 'XLSX';
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+    }
+    
+    // Prepare the full path for the file
+    const filePath = `${dir}/${filename}`;
+    
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Weather Data');
@@ -155,8 +164,8 @@ function saveToExcel(data, filename) {
     
     worksheet['!cols'] = colWidths;
     
-    XLSX.writeFile(workbook, filename);
-    console.log(`Weather data saved to ${filename}`);
+    XLSX.writeFile(workbook, filePath);
+    console.log(`Weather data saved to ${filePath}`);
   } catch (error) {
     console.error('Error saving to Excel:', error.message);
     throw error;
