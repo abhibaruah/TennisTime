@@ -14,7 +14,7 @@ const CONSTRAINTS = {
 function readExcelFile(filePath) {
   try {
     if (!fs.existsSync(filePath)) {
-      throw new Error(`File not found: ${filePath}`);
+      throw new Error(`File not found: $optimizeTennisTime.js`);
     }
     
     const workbook = XLSX.readFile(filePath);
@@ -22,7 +22,7 @@ function readExcelFile(filePath) {
     const worksheet = workbook.Sheets[sheetName];
     const data = XLSX.utils.sheet_to_json(worksheet);
     
-    console.log(`Successfully read ${data.length} records from ${filePath}`);
+    console.log(`Successfully read ${data.length} records from $optimizeTennisTime.js`);
     return data;
   } catch (error) {
     console.error('Error reading Excel file:', error.message);
@@ -149,8 +149,39 @@ function displayResults(paretoFront) {
   });
 }
 
+// Function to organize results by date for API response
+function organizeResultsByDate(paretoFront) {
+  // Group by date
+  const resultsByDate = {};
+  
+  paretoFront.forEach(slot => {
+    if (!resultsByDate[slot.Date]) {
+      resultsByDate[slot.Date] = [];
+    }
+    
+    resultsByDate[slot.Date].push({
+      time: slot.Time,
+      temperature: parseFloat(slot['Temperature (°C)']),
+      windSpeed: parseFloat(slot['Wind Speed (kph)']),
+      windDirection: slot['Wind Direction'],
+      precipitationProbability: parseFloat(slot['Precipitation Probability (%)']),
+      humidity: slot['Humidity (%)'] === 'N/A' ? 'N/A' : parseFloat(slot['Humidity (%)']),
+      condition: slot.Condition,
+      overallScore: slot.overallScore
+    });
+  });
+  
+  // Convert to array format for easier consumption by frontend
+  const organizedResults = Object.keys(resultsByDate).map(date => ({
+    date,
+    bestTimes: resultsByDate[date]
+  }));
+  
+  return organizedResults;
+}
+
 // Function to run the optimization process
-function optimizeTennisTimes(filePath) {
+function optimizeTennisTimes(filePath, returnData = false) {
   try {
     // Read the data
     const weatherData = readExcelFile(filePath);
@@ -165,10 +196,20 @@ function optimizeTennisTimes(filePath) {
     // Find Pareto optimal solutions
     const paretoFront = findParetoFront(scoredTimeSlots);
     
-    // Display results
+    // Display results in console if not returning data
+    if (!returnData) {
+      displayResults(paretoFront);
+      return;
+    }
+    
+    // Organize results by date for API response
+    const organizedResults = organizeResultsByDate(paretoFront);
+    
+    // Still display in console for debugging
     displayResults(paretoFront);
     
-    return paretoFront;
+    // Return organized data for API
+    return organizedResults;
   } catch (error) {
     console.error('Error in optimization process:', error.message);
     throw error;

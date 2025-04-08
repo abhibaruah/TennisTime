@@ -1,0 +1,5 @@
+ENHANCEMENTS:
+
+1. Include air quality
+2. Choose the day.
+3. Choose how many days in advance you need time slots for.
