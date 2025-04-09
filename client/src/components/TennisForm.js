@@ -5,6 +5,8 @@ import './TennisForm.css';
 const TennisForm = ({ onSubmit, onError, setLoading }) => {
   const [zipCode, setZipCode] = useState('02136');
   const [days, setDays] = useState(5);
+  const [startHour, setStartHour] = useState(6); // Default: 6 AM
+  const [endHour, setEndHour] = useState(20); // Default: 8 PM (20:00)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -13,7 +15,9 @@ const TennisForm = ({ onSubmit, onError, setLoading }) => {
     try {
       const response = await axios.post('http://localhost:5000/api/forecast', {
         zipCode,
-        days: parseInt(days)
+        days: parseInt(days),
+        startHour: parseInt(startHour),
+        endHour: parseInt(endHour)
       });
       
       onSubmit(response.data);
@@ -51,6 +55,32 @@ const TennisForm = ({ onSubmit, onError, setLoading }) => {
             max="7"
             value={days}
             onChange={(e) => setDays(e.target.value)}
+            required
+          />
+        </div>
+        
+        <div className="form-group">
+          <label htmlFor="startHour">Start Hour (0-23):</label>
+          <input
+            type="number"
+            id="startHour"
+            min="0"
+            max="23"
+            value={startHour}
+            onChange={(e) => setStartHour(e.target.value)}
+            required
+          />
+        </div>
+        
+        <div className="form-group">
+          <label htmlFor="endHour">End Hour (0-23):</label>
+          <input
+            type="number"
+            id="endHour"
+            min="0"
+            max="23"
+            value={endHour}
+            onChange={(e) => setEndHour(e.target.value)}
             required
           />
         </div>
