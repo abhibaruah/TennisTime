@@ -13,7 +13,9 @@ const TennisForm = ({ onSubmit, onError, setLoading }) => {
     setLoading(true);
     
     try {
-      const response = await axios.post('http://localhost:5000/api/forecast', {
+      //const response = await axios.post('http://localhost:5000/api/forecast', {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/forecast`, {
+
         zipCode,
         days: parseInt(days),
         startHour: parseInt(startHour),
